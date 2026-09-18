@@ -13,6 +13,16 @@ namespace halolog
     public:
         virtual ~Appender() = default;
         virtual bool append(const Record &record) = 0;
+
+        void setMinLevel(LogLevel level)
+        {
+            mMinLevel = level;
+        }
+
+        const LogLevel minLevel() { return mMinLevel; }
+
+    private:
+        LogLevel mMinLevel{LogLevel::Trace};
     };
 
 }

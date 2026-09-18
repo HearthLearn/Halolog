@@ -25,12 +25,9 @@ namespace halolog
             mAppenders.push_back(std::move(appender));
         }
 
-        void append(const Record &record)
+        const auto &appenders()
         {
-            for (const auto &appender : mAppenders)
-            {
-                appender->append(record);
-            }
+            return mAppenders;
         }
 
     private:
@@ -40,17 +37,30 @@ namespace halolog
 
 };
 
-#define LOG(level, message)                                \
-    do                                                     \
-    {                                                      \
-        Logger::instance().append(Record(level, message)); \
+#define HLOG(level, message)                                           \
+    do                                                                 \
+    {                                                                  \
+        auto logger = halolog::Logger::instance();                     \
+        {                                                              \
+            for (const auto &appender : logger.appenders())            \
+            {                                                          \
+                if (level < appender->minLevel())                      \
+                {                                                      \
+                    ;                                                  \
+                }                                                      \
+                else                                                   \
+                {                                                      \
+                    appender->append(halolog::Record(level, message)); \
+                }                                                      \
+            }                                                          \
+        }                                                              \
     } while (false);
 
-#define LOG_TRACE(message) LOG(LogLevel::Trace, message)
-#define LOG_DEBUG(message) LOG(LogLevel::Debug, message)
-#define LOG_INFO(message) LOG(LogLevel::Info, message)
-#define LOG_WARNING(message) LOG(LogLevel::Warning, message)
-#define LOG_ERROR(message) LOG(LogLevel::Error, message)
-#define LOG_FATAL(message) LOG(LogLevel::Fatal, message)
+#define LOG_TRACE(message) HLOG(halolog::LogLevel::Trace, message)
+#define LOG_DEBUG(message) HLOG(halolog::LogLevel::Debug, message)
+#define LOG_INFO(message) HLOG(halolog::LogLevel::Info, message)
+#define LOG_WARNING(message) HLOG(halolog::LogLevel::Warning, message)
+#define LOG_ERROR(message) HLOG(halolog::LogLevel::Error, message)
+#define LOG_FATAL(message) HLOG(halolog::LogLevel::Fatal, message)
 
 #endif // LOGGER_H

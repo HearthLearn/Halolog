@@ -6,12 +6,11 @@
 
 int main()
 {
-    using namespace halolog;
-    auto &logger = Logger::instance();
-    auto console = std::make_shared<ConsoleAppender>();
+    auto &logger = halolog::Logger::instance();
+    auto console = std::make_shared<halolog::ConsoleAppender>();
     logger.addAppender(console);
 
-    LOG_DEBUG("test");
+    LOG_DEBUG("sample test");
 
     return 0;
 }
