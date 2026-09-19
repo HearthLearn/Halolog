@@ -19,7 +19,7 @@ namespace halolog
         Debug,
         Info,
         Warning,
-        ERROR,
+        Error,
         Fatal
     };
 
@@ -52,6 +52,12 @@ namespace halolog
                std::uint_least32_t line)
             : level(lev), message(msg), timestamp(timestamp), threadId(threadid),
               fullFile(fullfile), fileName(filename), functionName(functionname), line(line) {}
+
+        Record &operator<<(const std::string &data)
+        {
+            message += data;
+            return *this;
+        }
 
         LogLevel level;
         std::string message;

@@ -10,7 +10,8 @@ int main()
     auto console = std::make_shared<halolog::ConsoleAppender>();
     logger.addAppender(console);
 
-    LOG_DEBUG("sample test");
+    HLOG_D("sample test");
+    HLOG_D("first = ") << std::string("1") << "2";
 
     return 0;
 }

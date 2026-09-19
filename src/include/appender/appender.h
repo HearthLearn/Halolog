@@ -12,7 +12,15 @@ namespace halolog
     {
     public:
         virtual ~Appender() = default;
-        virtual bool append(const Record &record) = 0;
+        virtual bool doAppend(const Record &record) = 0;
+
+        void append(const Record &record)
+        {
+            if (record.level >= mMinLevel)
+            {
+                doAppend(record);
+            }
+        }
 
         void setMinLevel(LogLevel level)
         {

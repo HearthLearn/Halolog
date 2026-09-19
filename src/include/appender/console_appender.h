@@ -15,7 +15,7 @@ namespace halolog
         ConsoleAppender() = default;
         ~ConsoleAppender() override = default;
 
-        bool append(const Record &record) override
+        bool doAppend(const Record &record) override
         {
             std::cout << record.message << std::endl;
             return true;
