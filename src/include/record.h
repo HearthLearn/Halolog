@@ -6,6 +6,10 @@
 #define RECORD_H
 
 #include <string>
+#include <thread>
+#include <filesystem>
+#include <chrono>
+#include <source_location>
 
 namespace halolog
 {
@@ -22,14 +26,44 @@ namespace halolog
     class Record
     {
     public:
-        Record(LogLevel lev, const std::string &msg)
-        {
-            level = lev;
-            message = msg;
-        }
+        Record(LogLevel lev, const std::string &msg,
+               const std::source_location &location = std::source_location::current())
+            : Record(lev, msg, std::chrono::system_clock::now(),
+                     std::this_thread::get_id(),
+                     location.file_name(), std::filesystem::path(location.file_name()).filename().string(),
+                     location.function_name(),
+                     location.line()) {}
+
+        // 解决对接其他系统时（如Qt） std::source_location 无法构造的问题
+        Record(LogLevel lev, const std::string &msg,
+               std::string fullfile,
+               std::string filename,
+               std::string functionname,
+               std::uint_least32_t line)
+            : Record(lev, msg, std::chrono::system_clock::now(),
+                     std::this_thread::get_id(), fullfile, filename, functionname, line) {}
+
+        Record(LogLevel lev, const std::string &msg,
+               std::chrono::system_clock::time_point timestamp,
+               std::thread::id threadid,
+               std::string fullfile,
+               std::string filename,
+               std::string functionname,
+               std::uint_least32_t line)
+            : level(lev), message(msg), timestamp(timestamp), threadId(threadid),
+              fullFile(fullfile), fileName(filename), functionName(functionname), line(line) {}
+
         LogLevel level;
         std::string message;
+
+        std::chrono::system_clock::time_point timestamp;
+        std::thread::id threadId;
+        std::string fullFile;
+        std::string fileName;
+        std::string functionName;
+        std::uint_least32_t line;
     };
+
 }
 
 #endif // RECORD_H

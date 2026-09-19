@@ -36,7 +36,7 @@ namespace halolog
     };
 
 };
-
+// 提前判断等级过滤，减少Record构造开销
 #define HLOG(level, message)                                           \
     do                                                                 \
     {                                                                  \
