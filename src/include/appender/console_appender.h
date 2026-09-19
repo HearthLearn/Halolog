@@ -17,7 +17,7 @@ namespace halolog
 
         bool doAppend(const Record &record) override
         {
-            std::cout << record.message << std::endl;
+            std::cout << record.message.str() << std::endl;
             return true;
         }
     };

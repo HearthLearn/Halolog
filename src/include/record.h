@@ -9,6 +9,8 @@
 #include <thread>
 #include <filesystem>
 #include <chrono>
+#include <sstream>
+#include <utility>
 #include <source_location>
 
 namespace halolog
@@ -50,17 +52,33 @@ namespace halolog
                std::string filename,
                std::string functionname,
                std::uint_least32_t line)
-            : level(lev), message(msg), timestamp(timestamp), threadId(threadid),
-              fullFile(fullfile), fileName(filename), functionName(functionname), line(line) {}
-
-        Record &operator<<(const std::string &data)
+            : level(lev), timestamp(timestamp), threadId(threadid),
+              fullFile(fullfile), fileName(filename), functionName(functionname), line(line)
         {
-            message += data;
+            message << msg;
+        }
+
+        template <typename T>
+        Record &operator<<(T &&value)
+        {
+            message << std::forward<T>(value);
+            return *this;
+        }
+
+        Record &operator<<(std::ostream &(*manipulator)(std::ostream &))
+        {
+            manipulator(message);
+            return *this;
+        }
+
+        Record &operator<<(std::ios_base &(*manipulator)(std::ios_base &))
+        {
+            manipulator(message);
             return *this;
         }
 
         LogLevel level;
-        std::string message;
+        std::ostringstream message;
 
         std::chrono::system_clock::time_point timestamp;
         std::thread::id threadId;
