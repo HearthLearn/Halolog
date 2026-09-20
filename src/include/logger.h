@@ -8,7 +8,7 @@
 #include "appender/appender.h"
 #include <vector>
 #include "record.h"
-
+#include <format>
 namespace halolog
 {
     class Logger
@@ -48,33 +48,28 @@ namespace halolog
 
     private:
         Logger() {};
+
         LogLevel mMinLevel{LogLevel::Trace};
         std::vector<std::shared_ptr<Appender>> mAppenders;
     };
 
 };
 
-// TODO: 改成 HLOG（logger* level message）
-// 支持 HLOG() << "xxx"的一个思路是
-// 一个方案是record持有logger  HLOG() 展开返回结果为 record ，record析构时写入
-// 一个方案是plog的方式，利用运算符优先级 展开为 logger += record << "xxx"; 等效于 logger += （record << "xxx"） 然后重写record的<<运算符和logger的+=运算符
+#define HLOG(logger, level, ...)   \
+    if (level < logger.minLevel()) \
+    {                              \
+        ;                          \
+    }                              \
+    else                           \
+        logger += halolog::Record(level __VA_OPT__(, std::format(__VA_ARGS__)))
 
-// 提前判断等级过滤，减少Record构造开销
-#define HLOG(logger, level, message) \
-    if (level < logger.minLevel())   \
-    {                                \
-        ;                            \
-    }                                \
-    else                             \
-        logger += halolog::Record(level, message)
+#define DEF_HLOG(level, ...) HLOG(halolog::Logger::instance(), level __VA_OPT__(, ) __VA_ARGS__)
 
-#define DEF_HLOG(level, message) HLOG(halolog::Logger::instance(), level, message)
-
-#define HLOG_T(message) DEF_HLOG(halolog::LogLevel::Trace, message)
-#define HLOG_D(message) DEF_HLOG(halolog::LogLevel::Debug, message)
-#define HLOG_I(message) DEF_HLOG(halolog::LogLevel::Info, message)
-#define HLOG_W(message) DEF_HLOG(halolog::LogLevel::Warning, message)
-#define HLOG_E(message) DEF_HLOG(halolog::LogLevel::Error, message)
-#define HLOG_F(message) DEF_HLOG(halolog::LogLevel::Fatal, message)
+#define HLOG_T(...) DEF_HLOG(halolog::LogLevel::Trace __VA_OPT__(, ) __VA_ARGS__)
+#define HLOG_D(...) DEF_HLOG(halolog::LogLevel::Debug __VA_OPT__(, ) __VA_ARGS__)
+#define HLOG_I(...) DEF_HLOG(halolog::LogLevel::Info __VA_OPT__(, ) __VA_ARGS__)
+#define HLOG_W(...) DEF_HLOG(halolog::LogLevel::Warning __VA_OPT__(, ) __VA_ARGS__)
+#define HLOG_E(...) DEF_HLOG(halolog::LogLevel::Error __VA_OPT__(, ) __VA_ARGS__)
+#define HLOG_F(...) DEF_HLOG(halolog::LogLevel::Fatal __VA_OPT__(, ) __VA_ARGS__)
 
 #endif // LOGGER_H

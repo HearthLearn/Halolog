@@ -28,7 +28,7 @@ namespace halolog
     class Record
     {
     public:
-        Record(LogLevel lev, const std::string &msg,
+        Record(LogLevel lev, const std::string &msg = {""},
                const std::source_location &location = std::source_location::current())
             : Record(lev, msg, std::chrono::system_clock::now(),
                      std::this_thread::get_id(),
@@ -36,7 +36,6 @@ namespace halolog
                      location.function_name(),
                      location.line()) {}
 
-        // 解决对接其他系统时（如Qt） std::source_location 无法构造的问题
         Record(LogLevel lev, const std::string &msg,
                std::string fullfile,
                std::string filename,
