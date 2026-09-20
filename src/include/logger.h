@@ -48,6 +48,10 @@ namespace halolog
 
     private:
         Logger() {};
+        Logger(const Logger &) = delete;
+        Logger &operator=(const Logger &) = delete;
+        Logger(Logger &&) = delete;
+        Logger &operator=(Logger &&) = delete;
 
         LogLevel mMinLevel{LogLevel::Trace};
         std::vector<std::shared_ptr<Appender>> mAppenders;
