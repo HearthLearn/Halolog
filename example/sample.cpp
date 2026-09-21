@@ -5,24 +5,51 @@
 #include "logger.h"
 #include "appender/console_appender.h"
 
-#include <cstdint>
 #include <iomanip>
+#include <memory>
 #include <string>
+#include <string_view>
 
-enum LegacyStatus
+enum class MissionState
 {
-    LegacyReady = 7
+    Idle,
+    Running,
+    Completed
 };
+
+constexpr std::string_view toString(MissionState state)
+{
+    switch (state)
+    {
+    case MissionState::Idle:
+        return "Idle";
+    case MissionState::Running:
+        return "Running";
+    case MissionState::Completed:
+        return "Completed";
+    }
+
+    return "Unknown";
+}
+
+std::ostream &operator<<(std::ostream &stream, MissionState state)
+{
+    return stream << toString(state);
+}
 
 struct User
 {
     int id;
     std::string name;
+    bool active;
 };
 
 std::ostream &operator<<(std::ostream &stream, const User &user)
 {
-    return stream << "User{id=" << user.id << ", name=" << user.name << '}';
+    return stream << "User{id=" << user.id
+                  << ", name=" << user.name
+                  << ", active=" << std::boolalpha << user.active
+                  << '}';
 }
 
 int main()
@@ -31,57 +58,40 @@ int main()
     auto console = std::make_shared<halolog::ConsoleAppender>();
     logger.addAppender(console);
 
-    HLOG_D("sample test");
+    int value = 42;
+    const void *pointer = &value;
 
-    const char *cString = "C string";
-    int pointedValue = 42;
+    // 1. Direct writing: plain text and std::format
+    HLOG_T("plain text");
+    HLOG_D("types: string={}, char={}, bool={}, signed={}, unsigned={}, float={}, pointer={}",
+           std::string("Halo"), 'A', true, -42, 42U, 3.1415926, pointer);
+    HLOG_I("format: hex={:#X}, binary={:#b}, padded={:06}, aligned='{:>8}', precision={:.2f}, braces={{}}",
+           255, 5, 42, "right", 3.1415926);
 
-    HLOG_D("strings: ")
-        << "string literal"
-        << ", std::string=" << std::string("standard string")
-        << ", const char*=" << cString
-        << ", char=" << 'C';
-
-    HLOG_D("integers: ")
-        << "short=" << static_cast<short>(-12)
-        << ", unsigned short=" << static_cast<unsigned short>(12)
-        << ", int=" << -123
-        << ", unsigned int=" << 123U
-        << ", long=" << 123L
-        << ", unsigned long=" << 123UL
-        << ", int64=" << std::int64_t{-123456789}
-        << ", uint64=" << std::uint64_t{123456789};
-
-    HLOG_D("floating point: ")
-        << "float=" << 1.25F
-        << ", double=" << 3.1415926
-        << ", long double=" << 2.5L;
-
-    HLOG_D("boolean: ")
-        << "default=" << true
-        << ", boolalpha=" << std::boolalpha << true
-        << ", reset=" << std::noboolalpha << false;
-
-    HLOG_D("pointers: ")
-        << "object=" << &pointedValue
-        << ", void*=" << static_cast<const void *>(&pointedValue)
-        << ", nullptr=" << nullptr;
-
-    HLOG_D("enum and custom type: ")
-        << "legacy enum=" << LegacyReady
-        << ", custom=" << User{1, "Alice"};
-
-    HLOG_D("format manipulators: ")
-        << "hex=" << std::hex << 255
-        << ", decimal=" << std::dec << 255
+    // 2. Streaming writing: empty message, text prefix, format prefix and flow controller.
+    HLOG_W() << "empty prefix: value=" << value;
+    HLOG_E("text prefix: ")
+        << std::string("Halo")
+        << ", char=" << 'A'
+        << ", bool=" << std::boolalpha << true
+        << ", signed=" << -42
+        << ", unsigned=" << 42U
+        << ", float=" << 3.1415926
+        << ", pointer=" << pointer
+        << ", null=" << nullptr;
+    HLOG_F("formatted prefix: id={}", 1001)
+        << ", hex=" << std::showbase << std::uppercase << std::hex << 255
         << ", fixed=" << std::fixed << std::setprecision(2) << 3.1415926
-        << ", scientific=" << std::scientific << 3.1415926
-        << ", padded=" << std::setfill('0') << std::setw(5) << 42;
-
-    HLOG_D("ostream manipulators:")
+        << ", padded=" << std::noshowbase << std::dec
+        << std::setfill('0') << std::setw(6) << 42
         << std::endl
         << "second line"
         << std::flush;
+
+    // 3. Extension types: enumeration, structure
+    const User user{1001, "Halo", true};
+    HLOG_T("scoped enum=") << MissionState::Completed;
+    HLOG_D("structure=") << user;
 
     return 0;
 }
