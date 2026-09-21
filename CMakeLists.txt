@@ -9,7 +9,9 @@ add_library(halolog INTERFACE
         src/include/logger.h
         src/include/record.h
         src/include/appender/appender.h
-        src/include/appender/console_appender.h)
+        src/include/appender/console_appender.h
+        src/include/appender/stream_appender.h
+        src/include/utils.h)
 
 target_include_directories(halolog
         INTERFACE

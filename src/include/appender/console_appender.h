@@ -4,24 +4,55 @@
 
 #ifndef CONSOLE_APPENDER_H
 #define CONSOLE_APPENDER_H
-#include "appender.h"
-#include <iostream>
+#include "stream_appender.h"
+#include "utils.h"
 
 namespace halolog
 {
-    class ConsoleAppender : public Appender
+    class ConsoleAppender : public StreamAppender
     {
     public:
-        ConsoleAppender() = default;
+        ConsoleAppender(std::ostream &stream = std::cout,
+                        bool flush = true,
+                        bool color = true)
+            : StreamAppender(stream, flush), mColor{color && ttyColorSupport(stream)}
+        {
+        }
         ~ConsoleAppender() override = default;
 
-        bool doAppend(const Record &record) override
+    protected:
+        std::string_view prefix(const Record &record) override
         {
-            std::cout << record.message.str() << std::endl;
-            return true;
+            if (!mColor)
+            {
+                return "";
+            }
+            switch (record.level)
+            {
+            case LogLevel::Trace:
+                return "\033[90m";
+            case LogLevel::Debug:
+                return "\033[36m";
+            case LogLevel::Info:
+                return "\033[32m";
+            case LogLevel::Warning:
+                return "\033[33m";
+            case LogLevel::Error:
+                return "\033[31m";
+            case LogLevel::Fatal:
+                return "\033[35;1m";
+            default:
+                return "";
+            }
         }
-    };
+        std::string_view suffix(const Record &record) override
+        {
+            return mColor ? "\033[0m" : "";
+        }
 
+    private:
+        bool mColor{false};
+    };
 }
 
 #endif // CONSOLE_APPENDER_H
