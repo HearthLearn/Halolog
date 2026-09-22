@@ -4,30 +4,60 @@
 
 #ifndef CONSOLE_APPENDER_H
 #define CONSOLE_APPENDER_H
-#include "stream_appender.h"
+#include "appender.h"
 #include "utils.h"
 
 namespace halolog
 {
-    class ConsoleAppender : public StreamAppender
+    class ConsoleAppender : public Appender
     {
     public:
         ConsoleAppender(std::ostream &stream = std::cout,
-                        bool flush = true,
-                        bool color = true)
-            : StreamAppender(stream, flush), mColor{color && ttyColorSupport(stream)}
+                        bool color = true,
+                        bool flush = true)
+            : mStream{stream},
+              mColor{color && ttyColorSupport(stream)},
+              mFlush{flush}
         {
         }
         ~ConsoleAppender() override = default;
 
-    protected:
-        std::string_view prefix(const Record &record) override
+        bool doAppend(const Record &record) override
         {
-            if (!mColor)
+            const std::string message = record.message.str();
+
+            std::string buff;
+            if (mColor)
             {
-                return "";
+                const std::string_view begin = prefix(record.level);
+                const std::string_view end = suffix();
+                buff.reserve(message.size() + begin.size() + end.size() + 1);
+                buff.append(begin);
+                buff.append(message);
+                buff.append(end);
             }
-            switch (record.level)
+            else
+            {
+                buff.reserve(message.size() + 1);
+                buff.append(message);
+            }
+
+            buff.push_back('\n');
+
+            mStream.write(
+                buff.data(),
+                static_cast<std::streamsize>(buff.size()));
+            if (mFlush)
+            {
+                mStream.flush();
+            }
+            return mStream.good();
+        }
+
+    private:
+        std::string_view prefix(const LogLevel &level)
+        {
+            switch (level)
             {
             case LogLevel::Trace:
                 return "\033[90m";
@@ -45,13 +75,15 @@ namespace halolog
                 return "";
             }
         }
-        std::string_view suffix(const Record &record) override
+        std::string_view suffix()
         {
-            return mColor ? "\033[0m" : "";
+            return "\033[0m";
         }
 
     private:
+        std::ostream &mStream;
         bool mColor{false};
+        bool mFlush{false};
     };
 }
 

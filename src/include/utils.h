@@ -13,7 +13,7 @@
 #include <unistd.h>
 #endif
 
-static bool ttyColorSupport(std::ostream &stream)
+inline bool ttyColorSupport(std::ostream &stream)
 {
 #ifdef _WIN32
     DWORD standardHandle = 0;

@@ -1,3 +1,6 @@
 
-add_executable(sample_example sample.cpp)
-target_link_libraries(sample_example PRIVATE halolog)
+add_executable(console_example console_example.cpp)
+target_link_libraries(console_example PRIVATE halolog)
+
+add_executable(dailyfile_example dailyfile_example.cpp)
+target_link_libraries(dailyfile_example PRIVATE halolog)
