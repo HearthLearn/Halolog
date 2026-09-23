@@ -6,6 +6,9 @@
 #define RECORD_H
 
 #include <string>
+#include <string_view>
+#include <array>
+#include <cassert>
 #include <thread>
 #include <filesystem>
 #include <chrono>
@@ -25,6 +28,22 @@ namespace halolog
         Fatal
     };
 
+    constexpr std::string_view levelToString(LogLevel level)
+    {
+        assert(static_cast<int>(level) >= 0 && static_cast<int>(level) < 6);
+        constexpr std::array<std::string_view, 6> names = {
+            "TRACE", "DEBUG", "INFO", "WARNING", "ERROR", "FATAL"};
+        return names[static_cast<int>(level)];
+    }
+
+    constexpr std::string_view levelToShortString(LogLevel level)
+    {
+        assert(static_cast<int>(level) >= 0 && static_cast<int>(level) < 6);
+        constexpr std::array<std::string_view, 6> names = {
+            "T", "D", "I", "W", "E", "F"};
+        return names[static_cast<int>(level)];
+    }
+
     class Record
     {
     public:
@@ -39,20 +58,20 @@ namespace halolog
         Record(LogLevel lev, const std::string &msg,
                std::string fullfile,
                std::string filename,
-               std::string functionname,
+               std::string function,
                std::uint_least32_t line)
             : Record(lev, msg, std::chrono::system_clock::now(),
-                     std::this_thread::get_id(), fullfile, filename, functionname, line) {}
+                     std::this_thread::get_id(), fullfile, filename, function, line) {}
 
         Record(LogLevel lev, const std::string &msg,
                std::chrono::system_clock::time_point timestamp,
                std::thread::id threadid,
                std::string fullfile,
                std::string filename,
-               std::string functionname,
+               std::string fun,
                std::uint_least32_t line)
             : level(lev), timestamp(timestamp), threadId(threadid),
-              fullFile(fullfile), fileName(filename), functionName(functionname), line(line)
+              fullFile(fullfile), fileName(filename), function(fun), line(line)
         {
             message << msg;
         }
@@ -83,7 +102,7 @@ namespace halolog
         std::thread::id threadId;
         std::string fullFile;
         std::string fileName;
-        std::string functionName;
+        std::string function;
         std::uint_least32_t line;
     };
 

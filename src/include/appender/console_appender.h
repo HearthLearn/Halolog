@@ -12,9 +12,9 @@ namespace halolog
     class ConsoleAppender : public Appender
     {
     public:
-        ConsoleAppender(std::ostream &stream = std::cout,
-                        bool color = true,
-                        bool flush = true)
+        explicit ConsoleAppender(std::ostream &stream = std::cout,
+                                 bool color = true,
+                                 bool flush = true)
             : mStream{stream},
               mColor{color && ttyColorSupport(stream)},
               mFlush{flush}
@@ -24,25 +24,23 @@ namespace halolog
 
         bool doAppend(const Record &record) override
         {
-            const std::string message = record.message.str();
+            const std::string message = formatter().format(record);
 
             std::string buff;
             if (mColor)
             {
                 const std::string_view begin = prefix(record.level);
                 const std::string_view end = suffix();
-                buff.reserve(message.size() + begin.size() + end.size() + 1);
+                buff.reserve(message.size() + begin.size() + end.size());
                 buff.append(begin);
                 buff.append(message);
                 buff.append(end);
             }
             else
             {
-                buff.reserve(message.size() + 1);
+                buff.reserve(message.size());
                 buff.append(message);
             }
-
-            buff.push_back('\n');
 
             mStream.write(
                 buff.data(),

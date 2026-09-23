@@ -12,7 +12,8 @@ add_library(halolog INTERFACE
         src/include/appender/console_appender.h
         src/include/utils.h
         src/include/appender/file_appender.h
-        src/include/appender/dailyfile_appender.h)
+        src/include/appender/dailyfile_appender.h
+        src/include/formatter.h)
 
 target_include_directories(halolog
         INTERFACE

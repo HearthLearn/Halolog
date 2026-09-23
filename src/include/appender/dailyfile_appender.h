@@ -15,7 +15,7 @@ namespace halolog
     class DailyFileAppender : public FileAppender
     {
     public:
-        DailyFileAppender(const std::string &pattern, bool flush = true)
+        explicit DailyFileAppender(const std::string &pattern, bool flush = true)
             : mPattern(pattern),
               mFlush(flush)
         {
@@ -39,8 +39,7 @@ namespace halolog
                 }
                 mCurrentPath = newpath;
             }
-            std::string message = record.message.str();
-            message.push_back('\n');
+            std::string message = formatter().format(record);
             bool result = write(message);
             if (mFlush)
             {

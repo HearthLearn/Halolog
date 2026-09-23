@@ -5,6 +5,8 @@
 #ifndef APPENDER_H
 #define APPENDER_H
 #include "record.h"
+#include "formatter.h"
+#include <memory>
 
 namespace halolog
 {
@@ -23,6 +25,14 @@ namespace halolog
             return true;
         }
 
+        void setFormatter(std::unique_ptr<Formatter> formatter)
+        {
+            if (formatter)
+                mFormatter = std::move(formatter);
+        }
+
+        const Formatter &formatter() const { return *mFormatter; }
+
         void setMinLevel(LogLevel level)
         {
             mMinLevel = level;
@@ -32,6 +42,7 @@ namespace halolog
 
     private:
         LogLevel mMinLevel{LogLevel::Trace};
+        std::unique_ptr<Formatter> mFormatter{std::make_unique<Formatter>("{d:%Y-%m-%d %H:%M:%S} [{P}] {m}{n}")};
     };
 
 }
