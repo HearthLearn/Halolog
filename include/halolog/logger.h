@@ -2,12 +2,12 @@
 // Created by new on 2026/9/18.
 //
 
-#ifndef LOGGER_H
-#define LOGGER_H
+#ifndef HALOLOG_LOGGER_H
+#define HALOLOG_LOGGER_H
 #include <memory>
-#include "appender/appender.h"
+#include <halolog/appender/appender.h>
 #include <vector>
-#include "record.h"
+#include <halolog/record.h>
 #include <format>
 namespace halolog
 {
@@ -76,4 +76,18 @@ namespace halolog
 #define HLOG_E(...) DEF_HLOG(halolog::LogLevel::Error __VA_OPT__(, ) __VA_ARGS__)
 #define HLOG_F(...) DEF_HLOG(halolog::LogLevel::Fatal __VA_OPT__(, ) __VA_ARGS__)
 
-#endif // LOGGER_H
+#define HLOG_APPEND_TO(logger, level, record)   \
+    do                                          \
+    {                                           \
+        auto &&hlogLogger = (logger);           \
+        const auto hlogLevel = (level);         \
+        if (hlogLevel >= hlogLogger.minLevel()) \
+        {                                       \
+            hlogLogger += (record);             \
+        }                                       \
+    } while (false)
+
+#define HLOG_APPEND(level, record) \
+    HLOG_APPEND_TO(halolog::Logger::instance(), level, record)
+
+#endif // HALOLOG_LOGGER_H

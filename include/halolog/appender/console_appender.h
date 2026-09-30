@@ -2,10 +2,10 @@
 // Created by new on 2026/9/18.
 //
 
-#ifndef CONSOLE_APPENDER_H
-#define CONSOLE_APPENDER_H
-#include "appender.h"
-#include "utils.h"
+#ifndef HALOLOG_CONSOLE_APPENDER_H
+#define HALOLOG_CONSOLE_APPENDER_H
+#include <halolog/appender/appender.h>
+#include <halolog/utils.h>
 
 namespace halolog
 {
@@ -85,4 +85,4 @@ namespace halolog
     };
 }
 
-#endif // CONSOLE_APPENDER_H
+#endif // HALOLOG_CONSOLE_APPENDER_H

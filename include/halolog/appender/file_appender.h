@@ -2,10 +2,10 @@
 // Created by new on 2026/9/21.
 //
 
-#ifndef FILE_APPENDER_H
-#define FILE_APPENDER_H
+#ifndef HALOLOG_FILE_APPENDER_H
+#define HALOLOG_FILE_APPENDER_H
 
-#include "appender.h"
+#include <halolog/appender/appender.h>
 #include <fstream>
 #include <string>
 #include <filesystem>
@@ -75,4 +75,4 @@ namespace halolog
     };
 }
 
-#endif // FILE_APPENDER_H
+#endif // HALOLOG_FILE_APPENDER_H

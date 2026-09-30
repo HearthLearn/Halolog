@@ -2,10 +2,10 @@
 // Created by new on 2026/9/18.
 //
 
-#ifndef APPENDER_H
-#define APPENDER_H
-#include "record.h"
-#include "formatter.h"
+#ifndef HALOLOG_APPENDER_H
+#define HALOLOG_APPENDER_H
+#include <halolog/record.h>
+#include <halolog/formatter.h>
 #include <memory>
 
 namespace halolog
@@ -47,4 +47,4 @@ namespace halolog
 
 }
 
-#endif // APPENDER_H
+#endif // HALOLOG_APPENDER_H

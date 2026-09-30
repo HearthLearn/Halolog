@@ -2,20 +2,20 @@
 // Created by Administrator on 2026/9/21.
 //
 
-#ifndef HALOLOG_DAILYFILE_APPENDER_H
-#define HALOLOG_DAILYFILE_APPENDER_H
+#ifndef HALOLOG_ROLLINGFILE_APPENDER_H
+#define HALOLOG_ROLLINGFILE_APPENDER_H
 
-#include "file_appender.h"
+#include <halolog/appender/file_appender.h>
 #include <chrono>
 #include <format>
 #include <stdexcept>
 
 namespace halolog
 {
-    class DailyFileAppender : public FileAppender
+    class RollingFileAppender : public FileAppender
     {
     public:
-        explicit DailyFileAppender(const std::string &pattern, bool flush = true)
+        explicit RollingFileAppender(const std::string &pattern, bool flush = true)
             : mPattern(pattern),
               mFlush(flush)
         {
@@ -76,4 +76,4 @@ namespace halolog
     };
 }
 
-#endif // HALOLOG_DAILYFILE_APPENDER_H
+#endif // HALOLOG_ROLLINGFILE_APPENDER_H

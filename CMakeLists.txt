@@ -11,8 +11,8 @@ include(GNUInstallDirs)
 
 target_include_directories(halolog
 	INTERFACE
-	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/halolog>
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/include>
+	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
 # MSVC: conformant preprocessor (required for __VA_OPT__) + UTF-8 source
@@ -33,12 +33,12 @@ if(PROJECT_IS_TOP_LEVEL)
 
 	file(GLOB_RECURSE HALOLOG_HEADERS
 		CONFIGURE_DEPENDS
-		src/include/*.h
+		include/*.h
 	)
 
 	target_sources(halolog INTERFACE
 		FILE_SET HEADERS
-		BASE_DIRS src/include
+		BASE_DIRS include
 		FILES ${HALOLOG_HEADERS}
 	)
 
@@ -46,7 +46,7 @@ if(PROJECT_IS_TOP_LEVEL)
 		TARGETS halolog
 		EXPORT halologTargets
 		FILE_SET HEADERS
-		DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/halolog
+		DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 	)
 
 	install(
@@ -76,8 +76,9 @@ if(PROJECT_IS_TOP_LEVEL)
 	)
 endif()
 
-option(BUILD_EXAMPLE "Build Example" ${PROJECT_IS_TOP_LEVEL})
+option(HALOLOG_BUILD_EXAMPLES "Build Halolog usage examples" ${PROJECT_IS_TOP_LEVEL})
+option(HALOLOG_BUILD_QT_EXAMPLE "Build the Qt usage example" OFF)
 
-if(BUILD_EXAMPLE)
+if(HALOLOG_BUILD_EXAMPLES)
 	add_subdirectory(example)
 endif()

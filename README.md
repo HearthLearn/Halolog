@@ -5,7 +5,7 @@
 - **Header-only**：无需编译，引入即用
 - **双模式写入**：`std::format` 格式化 + 流式 `operator<<`，可混合使用
 - **可定制格式**：类 log4j 模式字符串，支持 `std::format` 格式规格
-- **多种输出**：控制台（自动彩色）、文件、按日滚动文件
+- **多种输出**：控制台（自动彩色）、日期滚动文件
 - **级别过滤**：Logger 和 Appender 均可独立设置最低级别
 
 ## 环境要求
@@ -15,8 +15,8 @@
 ## 快速开始
 
 ```cpp
-#include "logger.h"
-#include "appender/console_appender.h"
+#include <halolog/logger.h>
+#include <halolog/appender/console_appender.h>
 
 int main() {
     auto& logger = halolog::Logger::instance();
@@ -55,9 +55,6 @@ find_package(halolog CONFIG REQUIRED)
 target_link_libraries(your_target PRIVATE halolog::halolog)
 ```
 
-两种方式对应的可独立配置示例见 `example/add_subdirectory` 和
-`example/find_package`，具体构建命令见 `example/README.md`。
-
 ## 使用指南
 
 ### 日志级别
@@ -92,17 +89,17 @@ auto console = std::make_shared<halolog::ConsoleAppender>();
 auto console = std::make_shared<halolog::ConsoleAppender>(std::cerr, false);
 ```
 
-**DailyFileAppender** — 日期滚动文件，路径支持 `std::chrono` 时间格式：
+**RollingFileAppender** — 日期滚动文件，路径支持 `std::chrono` 时间格式：
 
 ```cpp
 // logs/app_2026-09-21.log
-auto daily = std::make_shared<halolog::DailyFileAppender>("logs/app_{:%Y-%m-%d}.log");
+auto rolling = std::make_shared<halolog::RollingFileAppender>("logs/app_{:%Y-%m-%d}.log");
 
 // logs/2026/09/21/14-30-00.log
-auto daily = std::make_shared<halolog::DailyFileAppender>("logs/{:%Y}/{:%m}/{:%d}/{:%H-%M-%S}.log");
+auto rolling = std::make_shared<halolog::RollingFileAppender>("logs/{:%Y}/{:%m}/{:%d}/{:%H-%M-%S}.log");
 
 // logs/2026-09-21/app.log
-auto daily = std::make_shared<halolog::DailyFileAppender>("logs/{:%Y-%m-%d}/app.log");
+auto rolling = std::make_shared<halolog::RollingFileAppender>("logs/{:%Y-%m-%d}/app.log");
 ```
 
 ### Formatter 模式字符串
@@ -119,9 +116,9 @@ auto daily = std::make_shared<halolog::DailyFileAppender>("logs/{:%Y-%m-%d}/app.
 | `{t}` | 线程 ID | `40616` |
 | `{d}` | 时间戳 | `2026-09-21 08:01:55.748` |
 | `{F}` | 源文件名 | `main.cpp` |
-| `{fp}` | 源文件完整路径 | `src/main.cpp` |
+| `{fp}` | 源文件完整路径 | `../src/main.cpp` |
 | `{L}` | 行号 | `42` |
-| `{M}` | 函数名 | `int main()` |
+| `{M}` | 函数名 | `int __cdecl main(void)` |
 | `{n}` | 换行符 | — |
 
 字段支持 `std::format` 格式规格（冒号后追加）：
@@ -140,18 +137,27 @@ console->setFormatter(std::move(fmt));
 
 ```
 halolog/
-├── src/include/
-│   ├── logger.h              # Logger 单例 + 日志宏
-│   ├── record.h              # 日志记录（级别、消息、源码位置、时间戳）
-│   ├── formatter.h           # 模式字符串解析与格式化
-│   ├── utils.h               # 终端彩色检测
-│   └── appender/
-│       ├── appender.h        # Appender 基类
-│       ├── console_appender.h
-│       ├── file_appender.h   # 文件写入基类
-│       └── dailyfile_appender.h
-├── example/                  # 示例程序
-├── cmake/                    # CMake 配置模板
+├── include/
+│   └── halolog/
+│       ├── logger.h                   # Logger 单例 + 日志宏
+│       ├── record.h                   # 日志记录（级别、消息、源码位置、时间戳）
+│       ├── formatter.h                # 模式字符串解析与格式化
+│       ├── utils.h                    # 终端彩色检测
+│       └── appender/
+│           ├── appender.h             # Appender 基类
+│           ├── console_appender.h     # 支持颜色的控制台附加器
+│           ├── file_appender.h        # 文件基类
+│           └── rollingfile_appender.h # 日期滚动文件附加器
+├── example/
+│   ├── CMakeLists.txt                 # 示例项目入口
+│   ├── integration/                   # 集成方式示例（独立配置和构建）
+│   │   ├── add_subdirectory/
+│   │   └── find_package/
+│   └── usage/                         # 功能使用示例
+│       ├── console/                   # 控制台日志示例
+│       ├── rolling_file/              # 日期滚动文件日志示例
+│       └── qt/                        # Qt 集成示例
+├── cmake/                             # CMake 配置模板
 └── CMakeLists.txt
 ```
 

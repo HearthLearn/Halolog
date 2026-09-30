@@ -2,8 +2,8 @@
 // Created by new on 2026/9/18.
 //
 
-#ifndef RECORD_H
-#define RECORD_H
+#ifndef HALOLOG_RECORD_H
+#define HALOLOG_RECORD_H
 
 #include <string>
 #include <string_view>
@@ -108,4 +108,4 @@ namespace halolog
 
 }
 
-#endif // RECORD_H
+#endif // HALOLOG_RECORD_H
