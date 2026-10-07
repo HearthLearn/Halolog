@@ -2,7 +2,7 @@
 // Created by new on 2026/9/29.
 //
 #include <halolog/appender/console_appender.h>
-#include <halolog/logger.h>
+#include <halolog/halolog.h>
 
 #include <QCoreApplication>
 #include <QDebug>

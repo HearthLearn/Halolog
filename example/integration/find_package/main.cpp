@@ -1,5 +1,5 @@
 #include <halolog/appender/console_appender.h>
-#include <halolog/logger.h>
+#include <halolog/halolog.h>
 
 int main()
 {

@@ -1,5 +1,5 @@
 #include <halolog/appender/console_appender.h>
-#include <halolog/logger.h>
+#include <halolog/halolog.h>
 
 enum class MissionState
 {
@@ -48,9 +48,6 @@ int main()
     auto &logger = halolog::Logger::instance();
     auto console = std::make_shared<halolog::ConsoleAppender>();
     logger.addAppender(console);
-
-    logger.setMinLevel(halolog::LogLevel::Trace);
-    console->setMinLevel(halolog::LogLevel::Trace);
 
     int value = 42;
     const void *pointer = &value;
