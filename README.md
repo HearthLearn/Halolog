@@ -57,7 +57,7 @@ target_link_libraries(your_target PRIVATE halolog::halolog)
 
 ## 使用指南
 
-> **注意：** 所有配置（`setMinLevel`、`setFormatter`、`addAppender`）等必须在开始日志记录**之前**完成。运行时修改配置是**非线程安全**的。
+> **注意：** Logger 注册（`Logger::registry()`），配置（`setMinLevel`、`setFormatter`、`addAppender`）等必须在开始使用日志**之前**完成。运行时修改配置是**非线程安全**的。
 
 ### 日志级别
 

@@ -6,7 +6,10 @@
 #define HALOLOG_LOGGER_H
 
 #include <memory>
+#include <mutex>
 #include <vector>
+#include <unordered_map>
+#include <stdexcept>
 #include <halolog/appender/appender.h>
 #include <halolog/record.h>
 
@@ -14,11 +17,36 @@ namespace halolog
 {
     class Logger
     {
-    public:
-        static Logger &instance()
+    private:
+        static auto &pool()
         {
-            static Logger logger;
-            return logger;
+            static std::unordered_map<std::string, std::unique_ptr<Logger>> p;
+            static std::once_flag flag;
+            std::call_once(flag, [&]
+                           { p.emplace("def", std::unique_ptr<Logger>(new Logger())); });
+            return p;
+        }
+
+    public:
+        static Logger &registry(const std::string &name)
+        {
+            auto [it, ok] = pool().try_emplace(name, std::unique_ptr<Logger>(new Logger()));
+            if (!ok)
+            {
+                throw std::invalid_argument("Logger '" + name + "' already registered");
+            }
+            return *it->second;
+        }
+
+        static Logger &get(const std::string &name = "def")
+        {
+            auto &p = pool();
+            auto it = p.find(name);
+            if (it == p.end())
+            {
+                throw std::invalid_argument("Logger '" + name + "' not registered");
+            }
+            return *it->second;
         }
 
         void addAppender(std::shared_ptr<Appender> appender)

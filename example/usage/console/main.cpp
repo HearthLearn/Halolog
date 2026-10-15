@@ -45,7 +45,7 @@ std::ostream &operator<<(std::ostream &stream, const User &user)
 
 int main()
 {
-    auto &logger = halolog::Logger::instance();
+    auto &logger = halolog::Logger::get();
     auto console = std::make_shared<halolog::ConsoleAppender>();
     logger.addAppender(console);
 

@@ -45,15 +45,15 @@ void qtMessageHandler(QtMsgType type,
         const std::string text = toUtf8(message);
         const auto level = toHalologLevel(type);
 
-        HLOG_APPEND(level, halolog::Record(
-                               level,
-                               toUtf8(message),
-                               fullFile,
-                               std::filesystem::path(fullFile).filename().string(),
-                               function,
-                               context.line > 0
-                                   ? static_cast<std::uint_least32_t>(context.line)
-                                   : 0U));
+        halolog::log(halolog::Record(
+            level,
+            toUtf8(message),
+            fullFile,
+            std::filesystem::path(fullFile).filename().string(),
+            function,
+            context.line > 0
+                ? static_cast<std::uint_least32_t>(context.line)
+                : 0U));
     }
     catch (...)
     {
@@ -65,8 +65,8 @@ int main(int argc, char *argv[])
 {
     QCoreApplication application(argc, argv);
 
+    auto &logger = halolog::Logger::get();
     auto console = std::make_shared<halolog::ConsoleAppender>();
-    auto &logger = halolog::Logger::instance();
     logger.addAppender(console);
 
     qInstallMessageHandler(qtMessageHandler);

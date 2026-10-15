@@ -3,8 +3,7 @@
 
 int main()
 {
-    auto &logger = halolog::Logger::instance();
-
+    auto &logger = halolog::Logger::get();
     auto rolling = std::make_shared<halolog::RollingFileAppender>(
         "logs/app_{:%Y-%m-%d}.log");
     rolling->setMinLevel(halolog::LogLevel::Info);
