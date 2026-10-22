@@ -47,31 +47,31 @@ namespace halolog
     class Record
     {
     public:
-        Record(LogLevel lev, const std::string &msg = {""},
+        Record(LogLevel lev,
+               const std::string &loggername,
+               const std::string &msg = "",
                const std::source_location &location = std::source_location::current())
-            : Record(lev, msg, std::chrono::system_clock::now(),
+            : Record(lev, loggername, msg,
+                     std::chrono::system_clock::now(),
                      std::this_thread::get_id(),
-                     location.file_name(), std::filesystem::path(location.file_name()).filename().string(),
+                     location.file_name(),
+                     std::filesystem::path(location.file_name()).filename().string(),
                      location.function_name(),
                      location.line()) {}
 
-        Record(LogLevel lev, const std::string &msg,
-               std::string fullfile,
-               std::string filename,
-               std::string function,
-               std::uint_least32_t line)
-            : Record(lev, msg, std::chrono::system_clock::now(),
-                     std::this_thread::get_id(), fullfile, filename, function, line) {}
-
-        Record(LogLevel lev, const std::string &msg,
+        Record(LogLevel lev,
+               const std::string &loggername,
+               const std::string &msg,
                std::chrono::system_clock::time_point timestamp,
                std::thread::id threadid,
                std::string fullfile,
                std::string filename,
                std::string fun,
                std::uint_least32_t line)
-            : level(lev), timestamp(timestamp), threadId(threadid),
-              fullFile(fullfile), fileName(filename), function(fun), line(line)
+            : level(lev), loggerName(loggername),
+              timestamp(timestamp), threadId(threadid),
+              fullFile(std::move(fullfile)), fileName(std::move(filename)),
+              function(std::move(fun)), line(line)
         {
             message << msg;
         }
@@ -96,6 +96,7 @@ namespace halolog
         }
 
         LogLevel level;
+        std::string loggerName;
         std::ostringstream message;
 
         std::chrono::system_clock::time_point timestamp;

@@ -23,14 +23,14 @@ namespace halolog
             static std::unordered_map<std::string, std::unique_ptr<Logger>> p;
             static std::once_flag flag;
             std::call_once(flag, [&]
-                           { p.emplace("def", std::unique_ptr<Logger>(new Logger())); });
+                           { p.emplace("def", std::unique_ptr<Logger>(new Logger("def"))); });
             return p;
         }
 
     public:
         static Logger &registry(const std::string &name)
         {
-            auto [it, ok] = pool().try_emplace(name, std::unique_ptr<Logger>(new Logger()));
+            auto [it, ok] = pool().try_emplace(name, std::unique_ptr<Logger>(new Logger(name)));
             if (!ok)
             {
                 throw std::invalid_argument("Logger '" + name + "' already registered");
@@ -47,6 +47,11 @@ namespace halolog
                 throw std::invalid_argument("Logger '" + name + "' not registered");
             }
             return *it->second;
+        }
+
+        const std::string &name() const
+        {
+            return mName;
         }
 
         void addAppender(std::shared_ptr<Appender> appender)
@@ -76,12 +81,13 @@ namespace halolog
         }
 
     private:
-        Logger() {};
+        explicit Logger(std::string name) : mName(std::move(name)) {};
         Logger(const Logger &) = delete;
         Logger &operator=(const Logger &) = delete;
         Logger(Logger &&) = delete;
         Logger &operator=(Logger &&) = delete;
 
+        std::string mName;
         LogLevel mMinLevel{LogLevel::Trace};
         std::vector<std::shared_ptr<Appender>> mAppenders;
     };

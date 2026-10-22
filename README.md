@@ -6,6 +6,7 @@
 - **双模式写入**：`std::format` 格式化 + 流式 `operator<<`，可混合使用
 - **可定制格式**：类 log4j 模式字符串，支持 `std::format` 格式规格
 - **多种输出**：控制台（自动彩色）、时间滚动文件
+- **多 Logger 实例**：按名称注册和获取，独立配置
 - **级别过滤**：Logger 和 Appender 均可独立设置最低级别
 
 ## 环境要求
@@ -19,7 +20,7 @@
 #include <halolog/appender/console_appender.h>
 
 int main() {
-    auto& logger = halolog::Logger::instance();
+    auto& logger = halolog::Logger::get();
     logger.addAppender(std::make_shared<halolog::ConsoleAppender>());
 
     HLOG_I("hello {}", "halolog");       // std::format 风格
@@ -115,6 +116,7 @@ auto rolling = std::make_shared<halolog::RollingFileAppender>("logs/{:%Y-%m-%d}/
 | `{m}`  | 消息正文         | `hello halolog`           |
 | `{p}`  | 级别全名（大写） | `WARNING`                 |
 | `{P}`  | 级别缩写         | `W`                       |
+| `{N}`  | Logger 名称      | `def`                     |
 | `{t}`  | 线程 ID          | `40616`                   |
 | `{d}`  | 时间戳           | `2026-09-21 08:01:55.748` |
 | `{F}`  | 源文件名         | `main.cpp`                |
@@ -142,7 +144,7 @@ halolog/
 ├── include/
 │   └── halolog/
 │       ├── halolog.h                  # 日志宏
-│       ├── logger.h                   # Logger 单例
+│       ├── logger.h                   # Logger 多实例池
 │       ├── record.h                   # 日志记录
 │       ├── formatter.h                # 模式字符串解析与格式化
 │       ├── utils.h                    # 工具类
@@ -159,6 +161,7 @@ halolog/
 │   └── usage/                         # 功能使用示例
 │       ├── console/                   # 控制台日志示例
 │       ├── rolling_file/              # 时间滚动文件日志示例
+│       ├── multi_logger/              # 多 Logger 实例示例
 │       └── qt/                        # Qt 集成示例
 ├── cmake/                             # CMake 配置模板
 └── CMakeLists.txt

@@ -42,12 +42,16 @@ void qtMessageHandler(QtMsgType type,
     {
         const std::string fullFile = context.file != nullptr ? context.file : "";
         const std::string function = context.function != nullptr ? context.function : "";
+        const std::string category = context.category;
         const std::string text = toUtf8(message);
         const auto level = toHalologLevel(type);
 
         halolog::log(halolog::Record(
             level,
+            category,
             toUtf8(message),
+            std::chrono::system_clock::now(),
+            std::this_thread::get_id(),
             fullFile,
             std::filesystem::path(fullFile).filename().string(),
             function,

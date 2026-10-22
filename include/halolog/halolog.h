@@ -25,7 +25,7 @@ namespace halolog
         ;                          \
     }                              \
     else                           \
-        logger += halolog::Record(level __VA_OPT__(, std::format(__VA_ARGS__)))
+        logger += halolog::Record(level, logger.name() __VA_OPT__(, std::format(__VA_ARGS__)))
 
 #define HLOG_LOG(name, level, ...) HLOG(halolog::Logger::get(name), level __VA_OPT__(, ) __VA_ARGS__)
 
@@ -36,12 +36,12 @@ namespace halolog
 #define HLOG_E(...) HLOG_LOG("def", halolog::LogLevel::Error __VA_OPT__(, ) __VA_ARGS__)
 #define HLOG_F(...) HLOG_LOG("def", halolog::LogLevel::Fatal __VA_OPT__(, ) __VA_ARGS__)
 
-#define HLOG_LOGGER_T(name, ...) HLOG_LOG(name, halolog::LogLevel::Trace __VA_OPT__(, ) __VA_ARGS__)
-#define HLOG_LOGGER_D(name, ...) HLOG_LOG(name, halolog::LogLevel::Debug __VA_OPT__(, ) __VA_ARGS__)
-#define HLOG_LOGGER_I(name, ...) HLOG_LOG(name, halolog::LogLevel::Info __VA_OPT__(, ) __VA_ARGS__)
-#define HLOG_LOGGER_W(name, ...) HLOG_LOG(name, halolog::LogLevel::Warning __VA_OPT__(, ) __VA_ARGS__)
-#define HLOG_LOGGER_E(name, ...) HLOG_LOG(name, halolog::LogLevel::Error __VA_OPT__(, ) __VA_ARGS__)
-#define HLOG_LOGGER_F(name, ...) HLOG_LOG(name, halolog::LogLevel::Fatal __VA_OPT__(, ) __VA_ARGS__)
+#define HLOGN_T(name, ...) HLOG_LOG(name, halolog::LogLevel::Trace __VA_OPT__(, ) __VA_ARGS__)
+#define HLOGN_D(name, ...) HLOG_LOG(name, halolog::LogLevel::Debug __VA_OPT__(, ) __VA_ARGS__)
+#define HLOGN_I(name, ...) HLOG_LOG(name, halolog::LogLevel::Info __VA_OPT__(, ) __VA_ARGS__)
+#define HLOGN_W(name, ...) HLOG_LOG(name, halolog::LogLevel::Warning __VA_OPT__(, ) __VA_ARGS__)
+#define HLOGN_E(name, ...) HLOG_LOG(name, halolog::LogLevel::Error __VA_OPT__(, ) __VA_ARGS__)
+#define HLOGN_F(name, ...) HLOG_LOG(name, halolog::LogLevel::Fatal __VA_OPT__(, ) __VA_ARGS__)
 }
 
 #endif // HALOLOG_H

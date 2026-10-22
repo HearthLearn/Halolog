@@ -29,7 +29,8 @@ namespace halolog
             FileName,
             Line,
             Fun,
-            LineBreak
+            LineBreak,
+            LoggerName
         };
 
         struct Token
@@ -115,6 +116,11 @@ namespace halolog
                     result += "\n";
                     break;
                 }
+                case TokenType::LoggerName:
+                {
+                    result += std::vformat("{:" + token.format + "}", std::make_format_args(record.loggerName));
+                    break;
+                }
                 default:
                     throw std::invalid_argument("unknown field type");
                 }
@@ -136,6 +142,7 @@ namespace halolog
                 case TokenType::Fun:
                 case TokenType::Level:
                 case TokenType::ShortLevel:
+                case TokenType::LoggerName:
                 {
                     std::string test_str("test");
                     static_cast<void>(std::vformat(fmtstr, std::make_format_args(test_str)));
@@ -278,6 +285,7 @@ namespace halolog
             {"L", TokenType::Line},
             {"M", TokenType::Fun},
             {"n", TokenType::LineBreak},
+            {"N", TokenType::LoggerName},
         };
 
         const std::chrono::time_zone *mZone = std::chrono::current_zone();
