@@ -14,13 +14,18 @@ namespace halolog
     public:
         explicit ConsoleAppender(std::ostream &stream = std::cout,
                                  bool color = true,
-                                 bool flush = true)
+                                 FlushConfig flush = FlushConfig::every())
             : mStream{stream},
-              mColor{color && ttyColorSupport(stream)},
-              mFlush{flush}
+              mColor{color && ttyColorSupport(stream)}
         {
+            setFlush(flush);
         }
         ~ConsoleAppender() override = default;
+
+        void doFlush() override
+        {
+            mStream.flush();
+        }
 
         bool doAppend(const Record &record) override
         {
@@ -45,10 +50,6 @@ namespace halolog
             mStream.write(
                 buff.data(),
                 static_cast<std::streamsize>(buff.size()));
-            if (mFlush)
-            {
-                mStream.flush();
-            }
             return mStream.good();
         }
 
@@ -81,7 +82,6 @@ namespace halolog
     private:
         std::ostream &mStream;
         bool mColor{false};
-        bool mFlush{false};
     };
 }
 

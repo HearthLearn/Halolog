@@ -15,11 +15,12 @@ namespace halolog
     class RollingFileAppender : public FileAppender
     {
     public:
-        explicit RollingFileAppender(const std::string &pattern, bool flush = true)
-            : mPattern(pattern),
-              mFlush(flush)
+        explicit RollingFileAppender(const std::string &pattern,
+                                     FlushConfig flush = FlushConfig::every())
+            : mPattern(pattern)
         {
             validatePattern();
+            setFlush(flush);
         };
 
         bool doAppend(const Record &record) override
@@ -40,12 +41,7 @@ namespace halolog
                 mCurrentPath = newpath;
             }
             std::string message = formatter().format(record);
-            bool result = write(message);
-            if (mFlush)
-            {
-                flush();
-            }
-            return result;
+            return write(message);
         }
 
     private:
@@ -71,7 +67,6 @@ namespace halolog
         }
 
         std::string mPattern;
-        bool mFlush{true};
         std::filesystem::path mCurrentPath;
     };
 }

@@ -25,6 +25,8 @@ namespace halolog
         FileAppender(FileAppender &&) = delete;
         FileAppender &operator=(FileAppender &&) = delete;
 
+        void doFlush() override { flushStream(); }
+
     protected:
         bool checkPath(const std::filesystem::path &filepath)
         {
@@ -59,13 +61,13 @@ namespace halolog
             return mFileStream.good();
         }
 
-        void flush() { mFileStream.flush(); }
+        void flushStream() { mFileStream.flush(); }
 
         void close()
         {
             if (isOpen())
             {
-                flush();
+                flushStream();
                 mFileStream.close();
             }
         }

@@ -80,6 +80,17 @@ namespace halolog
             }
         }
 
+        void flush()
+        {
+            for (const auto &appender : mAppenders)
+            {
+                if (appender)
+                {
+                    appender->flush();
+                }
+            }
+        }
+
     private:
         explicit Logger(std::string name) : mName(std::move(name)) {};
         Logger(const Logger &) = delete;

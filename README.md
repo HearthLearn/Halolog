@@ -3,11 +3,13 @@
 轻量级 C++20 header-only 日志库，基于 `std::format` 和 `std::source_location`。
 
 - **Header-only**：无需编译，引入即用
-- **双模式写入**：`std::format` 格式化 + 流式 `operator<<`，可混合使用
-- **可定制格式**：类 log4j 模式字符串，支持 `std::format` 格式规格
-- **多种输出**：控制台（自动彩色）、时间滚动文件
 - **多 Logger 实例**：按名称注册和获取，独立配置
-- **级别过滤**：Logger 和 Appender 均可独立设置最低级别
+- **级别过滤**：`Logger` 和 `Appender` 均可独立设置最低级别
+- **双模式写入**：`std::format` 格式化 + 流式 `operator<<`，可混合使用
+- **可定制格式**：类 `log4j` 模式字符串，支持 `std::format` 格式规格
+- **多种输出**：控制台（自动彩色）、时间滚动文件
+- **Flush 策略**：支持 `Every` / `OnLevel` / `Count` / `Manual` 四种刷新策略
+- **线程安全写入**：`Appender` 内置 `mutex` 保护
 
 ## 环境要求
 - C++20
@@ -58,7 +60,7 @@ target_link_libraries(your_target PRIVATE halolog::halolog)
 
 ## 使用指南
 
-> **注意：** Logger 注册（`Logger::registry()`），配置（`setMinLevel`、`setFormatter`、`addAppender`）等必须在开始使用日志**之前**完成。运行时修改配置是**非线程安全**的。
+> **注意：** Logger 注册（`Logger::registry()`），配置（`setMinLevel`、`setFormatter`、`addAppender`、`setFlush`）等必须在开始使用日志**之前**完成。运行时修改配置是**非线程安全**的。
 
 ### 日志级别
 
