@@ -165,6 +165,16 @@ halolog/
 │       ├── rolling_file/              # 时间滚动文件日志示例
 │       ├── multi_logger/              # 多 Logger 实例示例
 │       └── qt/                        # Qt 集成示例
+├── test/
+│   ├── CMakeLists.txt                 # 测试构建配置（Catch2 FetchContent）
+│   ├── includes.h                     # 公共头：TestAppender、辅助函数
+│   ├── test_logger.cpp                # Logger 注册 / 获取 / 级别过滤
+│   ├── test_formatter.cpp             # Formatter 全字段与格式规格
+│   ├── test_appender.cpp              # Appender 级别过滤、ConsoleAppender
+│   ├── test_flush.cpp                 # 四种 Flush 策略
+│   ├── test_thread_safety.cpp         # 多线程并发安全
+│   ├── test_file.cpp                  # 文件写入与 RollingFile 滚动
+│   └── test_macros.cpp                # HLOG_* / HLOGN_* 宏三种风格
 ├── cmake/                             # CMake 配置模板
 └── CMakeLists.txt
 ```

@@ -78,7 +78,13 @@ endif()
 
 option(HALOLOG_BUILD_EXAMPLES "Build Halolog usage examples" ${PROJECT_IS_TOP_LEVEL})
 option(HALOLOG_BUILD_QT_EXAMPLE "Build the Qt usage example" OFF)
+option(HALOLOG_BUILD_TESTS "Build Halolog test" ${PROJECT_IS_TOP_LEVEL})
 
 if(HALOLOG_BUILD_EXAMPLES)
 	add_subdirectory(example)
+endif()
+
+if(HALOLOG_BUILD_TESTS)
+	enable_testing()
+	add_subdirectory(test)
 endif()

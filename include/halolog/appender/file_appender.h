@@ -27,6 +27,15 @@ namespace halolog
 
         void doFlush() override { flushStream(); }
 
+        void close()
+        {
+            if (isOpen())
+            {
+                flushStream();
+                mFileStream.close();
+            }
+        }
+
     protected:
         bool checkPath(const std::filesystem::path &filepath)
         {
@@ -62,15 +71,6 @@ namespace halolog
         }
 
         void flushStream() { mFileStream.flush(); }
-
-        void close()
-        {
-            if (isOpen())
-            {
-                flushStream();
-                mFileStream.close();
-            }
-        }
 
     private:
         std::ofstream mFileStream;
